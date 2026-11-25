@@ -1,0 +1,220 @@
+<!DOCTYPE html><html lang="it"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><title>NCPD // Database Fascicoli</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+:root{--bg:#060d17;--p:#0c1a2b;--r:#3aa0ff;--r2:#1b3a5e;--t:#dbe8f5;--m:#7f9bb8;--g:#3ddc84;--x:#ff4545;color-scheme:dark;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+*{box-sizing:border-box}html,body{height:auto}body{margin:0;background:var(--bg);color:var(--t);font:14px/1.45 "Courier New",ui-monospace,monospace}
+body::after{content:"";position:fixed;inset:0;pointer-events:none;background:repeating-linear-gradient(0deg,rgba(0,0,0,.25) 0 1px,transparent 1px 3px)}
+header{background:linear-gradient(#10305a,#0a1a2e);border-bottom:2px solid var(--r);padding:12px 14px 10px;display:flex;flex-direction:column;gap:6px;align-items:center;text-align:center}header::after{content:"";display:block;height:6px;margin:6px -14px -10px;width:calc(100% + 28px);background:repeating-linear-gradient(135deg,#f5c518 0 12px,#111 12px 24px)}header svg{width:62px;height:auto;filter:drop-shadow(0 0 8px rgba(58,160,255,.5))}
+h1{margin:0;font-size:16px;letter-spacing:3px;color:var(--t)}h1 small{color:var(--m);letter-spacing:1px;font-size:11px;display:block}
+h2{font-size:14px;letter-spacing:2px;color:var(--r);margin:0 0 8px;border-bottom:1px dashed var(--r2);padding-bottom:4px}
+main{max-width:980px;margin:0 auto;padding:12px}
+.card{background:var(--p);border:1px solid var(--r2);padding:12px;margin-bottom:12px}
+button,select,input,textarea{font:inherit;color:var(--t);background:#000;border:1px solid var(--r);padding:6px 10px}
+button{cursor:pointer;text-transform:uppercase;letter-spacing:1px;font-size:12px}button:hover,button.on{background:var(--r);color:#000}
+button.g{border-color:var(--g);color:var(--g)}button.g:hover{background:var(--g);color:#000}
+textarea{width:100%;min-height:90px}input[type=text],select{width:100%}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.sp{justify-content:space-between}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}
+.cells{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:6px}
+.st{border:1px solid var(--r2);padding:8px;text-align:center}.st b{display:block;font-size:26px;color:var(--r)}
+.m{color:var(--m);font-size:12px}.ok{color:var(--g)}.bad{color:var(--x)}
+.sk{display:flex;justify-content:space-between;align-items:center;gap:6px;border-bottom:1px dotted var(--r2);padding:3px 0}
+.sk span.n{flex:1}.q{padding:2px 8px}
+.av{width:96px;height:96px;object-fit:cover;border:2px solid var(--r);background:#000;flex:none}
+.bar{height:10px;background:#000;border:1px solid var(--r2)}.bar i{display:block;height:100%;background:var(--r)}
+#log{max-height:220px;overflow:auto;font-size:13px}#log div{border-bottom:1px dotted var(--r2);padding:3px 0}
+details{margin-bottom:10px}summary{cursor:pointer;color:var(--r)}
+.warn{color:#ffb020}
+.g h3{color:var(--r);font-size:13px;margin:14px 0 4px;letter-spacing:1px}.g p,.g li{margin:3px 0}.g ul{padding-left:18px;margin:4px 0}.g table{border-collapse:collapse}.g td{border:1px solid var(--r2);padding:2px 10px}.g td:first-child{color:var(--r);font-weight:bold;text-align:center}
+button.on .m{color:#000}
+@keyframes in{from{opacity:0;transform:translateY(10px)}}
+@keyframes spin{from{transform:translate(-50%,-50%) rotate(0) scale(.3)}to{transform:translate(-50%,-50%) rotate(720deg) scale(1)}}
+@keyframes pop{from{transform:translate(-50%,-50%) scale(1.6)}}
+@keyframes shake{20%,60%{transform:translate(-58%,-50%)}40%,80%{transform:translate(-42%,-50%)}}
+@keyframes grow{from{width:0}}
+@keyframes gl{0%,92%,100%{transform:none;text-shadow:none}94%{transform:translateX(-3px);text-shadow:3px 0 #ff4545,-3px 0 #3aa0ff}96%{transform:translateX(3px)}}
+@keyframes glow{50%{filter:drop-shadow(0 0 16px #3aa0ff)}}
+@keyframes rf{50%{box-shadow:inset 0 0 140px rgba(255,60,60,.5)}}
+@keyframes pl{50%{opacity:.35}}
+@keyframes gx{0%,100%{transform:none}25%{transform:translate(-3px,1px)}50%{transform:translate(3px,-1px);color:#fff}75%{transform:translate(-2px,0)}}
+#m.anim>*{animation:in .4s both}#m.anim .bar i{animation:grow .8s ease-out}
+.die{position:fixed;left:50%;top:38%;width:120px;height:120px;transform:translate(-50%,-50%);display:grid;place-items:center;font:bold 46px "Courier New",monospace;color:#04101c;background:var(--r);clip-path:polygon(50% 0,100% 38%,82% 100%,18% 100%,0 38%);z-index:60;pointer-events:none;animation:spin .65s ease-out both}
+.die.stop{animation:pop .35s both}.die.crit{background:var(--g)}.die.fum{background:var(--x)}.die.fum.stop{animation:shake .5s both}
+button{transition:transform .12s,background .15s}button:active{transform:scale(.93)}.st,.card{transition:box-shadow .2s,border-color .2s}.st:hover,.card:hover{border-color:var(--r);box-shadow:0 0 12px rgba(58,160,255,.3)}
+h1{animation:gl 7s infinite}header svg{animation:glow 3s infinite}
+#log div.new{animation:in .4s}.bar i.lo{animation:pl .9s infinite}.glitch{animation:gx .4s infinite}
+body.psy::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:40;animation:rf 1s infinite}
+#boot{position:fixed;inset:0;background:#030810;z-index:100;padding:24px;color:var(--r);font-size:15px;transition:opacity .6s}#boot.out{opacity:0}#boot div{animation:in .2s}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style></head><body>
+<header><svg viewBox="0 0 100 120" aria-label="Emblema NCPD (stilizzato)"><path d="M50 4 92 18v42c0 28-20 46-42 56C28 106 8 88 8 60V18Z" fill="#0d2f57" stroke="#3aa0ff" stroke-width="4"/><polygon points="50,26 55.3,40.7 70.9,41.2 58.6,50.8 62.9,65.8 50,57 37.1,65.8 41.4,50.8 29.1,41.2 44.7,40.7" fill="#e8f1ff"/><text x="50" y="93" font-family="Arial,sans-serif" font-size="21" font-weight="bold" fill="#e8f1ff" text-anchor="middle">NCPD</text></svg><h1>NIGHT CITY POLICE DEPARTMENT<small>Database fascicoli · Accesso riservato · Cyberpunk RED</small></h1><div class="row"><button id="snd" data-a="snd">🔊</button><button id="gmb" data-a="gm" hidden>&#9670; Master</button><button data-a="home">&#9632; Archivio</button></div></header>
+<main id="m"></main>
+<script>
+const $=s=>document.querySelector(s),esc=s=>String(s??'').replace(/[&<>"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]));
+const ST='INT REF DEX TECH COOL WILL LUCK MOVE BODY EMP'.split(' ');
+const SD={INT:'Intelligenza: ragionare, ricordare, investigare',REF:'Riflessi: mirare, guidare, reagire',DEX:'Destrezza: agilità, scatto, schivare',TECH:'Tecnica: riparare, hackerare, curare',COOL:'Sangue freddo: convincere, intimidire',WILL:'Volontà: resistere a paura e dolore',LUCK:'Fortuna: punti da spendere per +1 a un tiro',MOVE:'Movimento: velocità sul campo',BODY:'Corpo: resistenza fisica e salvezza dalla morte',EMP:'Empatia: relazioni; misura la tua Umanità'};
+const RV=[8,8,7,7,6,6,5,5,5,5];
+const R={Solo:['Mercenario e guardia del corpo: il combattente puro.','Combat Awareness','Percepisci e reagisci meglio nello scontro.','REF DEX BODY WILL COOL INT MOVE TECH LUCK EMP','Handgun,Shoulder Arms,Autofire,Evasion,Athletics,Perception,Tactics,Endurance'],
+Netrunner:['Hacker che entra nella Rete e nei sistemi.','Interface','Abilità di intrusione nella Rete.','INT TECH REF DEX WILL COOL LUCK MOVE BODY EMP','Electronics/Security Tech,Cryptography,Library Search,Concentration,Perception,Handgun,Evasion,Stealth'],
+Tech:['Meccanico e inventore: ripara e costruisce.','Maker','Costruire, riparare e migliorare oggetti.','TECH INT DEX REF WILL COOL LUCK MOVE BODY EMP','Basic Tech,Cybertech,Weaponstech,Vehicle Tech,Electronics/Security Tech,Education,Handgun,Perception'],
+Medtech:['Medico di strada: cura e tiene in vita il gruppo.','Medicine','Medicina avanzata, farmaci e chirurgia.','TECH INT EMP WILL DEX COOL LUCK BODY REF MOVE','Paramedic,Surgery,First Aid,Science,Human Perception,Education,Concentration,Handgun'],
+Rockerboy:['Artista ribelle: carisma e folle in piazza.','Charismatic Impact','Influenzare e ispirare con la tua presenza.','COOL EMP DEX LUCK WILL REF INT MOVE BODY TECH','Play Instrument,Composition,Persuasion,Wardrobe & Style,Streetwise,Conversation,Handgun,Acting'],
+Media:['Giornalista e influencer: scova e racconta la verità.','Credibility','Farti credere e diffondere notizie.','INT COOL EMP WILL LUCK DEX REF TECH MOVE BODY','Library Search,Persuasion,Conversation,Human Perception,Photography/Film,Streetwise,Composition,Handgun'],
+Exec:['Dirigente corporativo: soldi, potere e contatti.','Teamwork','Il tuo team di lavoro ti sostiene.','COOL INT EMP WILL LUCK REF DEX TECH MOVE BODY','Leadership,Persuasion,Business,Bribery,Human Perception,Trading,Conversation,Handgun'],
+Lawman:['Poliziotto o agente: legge e ordine (a modo suo).','Backup','Chiami rinforzi dalle forze dell’ordine.','REF BODY WILL COOL DEX INT EMP MOVE LUCK TECH','Handgun,Shoulder Arms,Interrogation,Streetwise,Perception,Tracking,Driving,Brawling'],
+Fixer:['Intermediario: trova di tutto, per un prezzo.','Operator','Ottenere merci, favori e informazioni.','COOL EMP INT LUCK WILL REF DEX TECH MOVE BODY','Streetwise,Trading,Bribery,Persuasion,Human Perception,Handgun,Forgery,Evasion'],
+Nomad:['Viaggiatore di clan: veicoli e famiglia.','Moto','Guidare e usare i veicoli del clan.','MOVE REF BODY DEX WILL COOL TECH INT LUCK EMP','Driving,Vehicle Tech,Handgun,Shoulder Arms,Tracking,Endurance,Athletics,Perception']};
+const SK=`Acting:COOL|Archery:REF|Athletics:DEX:b|Autofire:REF:x|Basic Tech:TECH:b|Bribery:COOL|Brawling:DEX:b|Business:INT|Composition:INT|Concentration:WILL:b|Conversation:EMP:b|Criminology:INT|Cryptography:INT|Cybertech:TECH|Demolitions:TECH:x|Driving:REF|Education:INT:b|Electronics/Security Tech:TECH:x|Endurance:WILL|Evasion:DEX:b|First Aid:TECH:b|Forgery:TECH|Gamble:COOL|Handgun:REF|Heavy Weapons:REF:x|Human Perception:EMP:b|Interrogation:COOL|Language (Native):INT:b|Language (Streetslang):INT:b|Leadership:EMP|Library Search:INT|Local Expert:INT:b|Melee Weapon:DEX|Paramedic:TECH:x|Perception:INT:b|Persuasion:COOL:b|Photography/Film:TECH|Pick Lock:TECH|Pick Pocket:TECH|Pilot Air Vehicle:REF:x|Play Instrument:TECH|Resist Torture/Drugs:WILL:b|Science:INT|Shoulder Arms:REF|Stealth:DEX:b|Streetwise:COOL|Surgery:TECH:x|Tactics:INT|Tracking:INT|Trading:COOL|Vehicle Tech:TECH|Wardrobe & Style:COOL|Weaponstech:TECH`.split('|').map(x=>{const[n,s,f='']=x.split(':');return{n,s,b:f=='b',x:f=='x'}});
+const OP={gang:['Nessuna (lupo solitario)','Maelstrom','Tyger Claws','Valentinos','Voodoo Boys','6th Street','Animals','Moxes','Bozos','Clan nomade','Corporazione','Polizia (NCPD)'],amb:['Strada','Periferia','Corporazione','Clan nomade','Famiglia benestante','Istituto/orfanotrofio'],mot:['Soldi','Vendetta','Libertà','Fama','Proteggere i miei','Sopravvivere','Conoscenza'],trat:['Ironico','Aggressivo','Timido','Calcolatore','Leale','Paranoico','Carismatico']},LB={gang:'Gang / affiliazione',amb:'Dove sei cresciuto',mot:'Cosa ti muove',trat:'Carattere'};
+const CATS=['Neuralware','Cyberoptics','Cyberaudio','Cyberarm','Cyberleg','Corpo interno','Corpo esterno','Telaio'],CY=`Neuralware|Neural Link|Porta neurale: collega Rete e impianti|7|Netrunner Tech Media Fixer
+Neuralware|Chipware Socket|Slot per chip di abilità|3|Tech Medtech Media Exec
+Neuralware|Interface Plugs|Cavi per veicoli e armi smart|7|Nomad Solo Netrunner
+Neuralware|Kerenzikov|Riflessi: bonus all’iniziativa|14|Solo Lawman Nomad
+Neuralware|Sandevistan|Riflessi estremi (+iniziativa)|14|Solo Netrunner
+Neuralware|Pain Editor|Ignori il dolore delle ferite|14|Solo Lawman Nomad
+Neuralware|Braindance Recorder|Registra esperienze sensoriali|7|Media
+Neuralware|Internal Agent|IA personale nella testa|7|Exec Fixer Media Netrunner
+Cyberoptics|Cybereye|Occhio cibernetico (base)|7|Solo Lawman Media Nomad
+Cyberoptics|Low Light/IR/UV|Visione notturna, infrarossi, UV|3|Solo Lawman Nomad
+Cyberoptics|TeleOptics|Zoom a lunga distanza|3|Solo Lawman Nomad
+Cyberoptics|Targeting Scope|Mirino integrato (+mira)|3|Solo Lawman
+Cyberoptics|Image Enhance|Migliora la vista e i dettagli|3|Media Lawman
+Cyberoptics|Anti-Dazzle|Protegge da flash e luci|3|Solo
+Cyberoptics|Radar Detector|Rileva i radar|3|Nomad
+Cyberoptics|Virtuality|Realtà aumentata|3|Netrunner Media
+Cyberoptics|Dartgun|Pistola a dardi nell’occhio|3|Fixer Solo
+Cyberaudio|Cyberaudio Suite|Orecchio cibernetico (base)|7|Media Fixer Lawman Rockerboy
+Cyberaudio|Amplified Hearing|Udito amplificato|3|Solo Lawman Media
+Cyberaudio|Audio Recorder|Registra i suoni|3|Media Fixer
+Cyberaudio|Bug Detector|Rileva microspie|3|Fixer Netrunner
+Cyberaudio|Level Damper|Protegge dai rumori forti|3|Solo Rockerboy
+Cyberaudio|Radio Communicator|Radio integrata|3|Solo Lawman Nomad
+Cyberaudio|Voice Stress Analyzer|Capisce quando menti|3|Lawman Fixer Media
+Cyberarm|Cyberarm|Braccio protesi, più forza|7|Solo Nomad Tech
+Cyberarm|Big Knucks|Nocche rinforzate|3|Solo
+Cyberarm|Rippers|Artigli retrattili|3|Solo Nomad
+Cyberarm|Wolvers|Lame lunghe retrattili|3|Solo
+Cyberarm|Scratchers|Unghie-lame|3|Solo Rockerboy
+Cyberarm|Slice ’N Dice|Lama a catena|3|Solo
+Cyberarm|Grapple Hand|Rampino lanciabile|3|Nomad Solo
+Cyberarm|Hidden Holster|Fondina nascosta|3|Solo Lawman Fixer
+Cyberarm|Popup Shield|Scudo estraibile|3|Solo Lawman
+Cyberarm|Popup Grenade Launcher|Lanciagranate integrato|7|Solo
+Cyberarm|Medscanner|Diagnosi rapida dei feriti|3|Medtech
+Cyberarm|Techscanner|Scansiona apparecchi|3|Tech
+Cyberarm|Tool Hand|Attrezzi integrati|3|Tech Nomad
+Cyberarm|Quick Change Mount|Cambio rapido di mano|3|Tech
+Cyberleg|Cyberleg|Gamba protesi, +MOVE|7|Nomad Solo Lawman
+Cyberleg|Jump Booster|Salti potenziati|3|Solo Nomad
+Cyberleg|Skate Wheels|Rotelle nei piedi|3|Rockerboy Nomad
+Cyberleg|Grip Foot|Piede da arrampicata|3|Solo Nomad
+Corpo interno|Enhanced Antibodies|Resisti a veleni e malattie|7|Medtech Nomad
+Corpo interno|Independent Air Supply|Aria per circa 30 minuti|7|Nomad Solo
+Corpo interno|Gills|Respiri sott’acqua|7|Nomad
+Corpo interno|Midnight Lady|Rilascio rapido di farmaci|7|Medtech Solo
+Corpo interno|Radar/Sonar Implant|Mappa l’ambiente intorno|7|Solo Lawman
+Corpo interno|Muscle & Bone Lace|+BODY e pugni più forti|14|Solo Nomad
+Corpo esterno|Subdermal Armor|Pelle blindata|7|Solo Lawman Exec
+Corpo esterno|Skin Weave|Pelle intrecciata (SP)|7|Solo Lawman Exec
+Telaio|Linear Frame Beta|Telaio lineare: forza e salti|14|Solo Nomad
+Telaio|Linear Frame Sigma|Telaio potenziato|14|Solo`.split('\n').map(l=>{const[c,n,e,h,r]=l.split('|');return[n,e,+h,r,c]});
+const SKM=Object.fromEntries(SK.map(s=>[s.n,s]));
+const WP=[['Pistola media','Handgun','2d6'],['Pistola pesante','Handgun','3d6'],['Pistola molto pesante','Handgun','4d6'],['SMG','Handgun','2d6'],['Fucile a pompa','Shoulder Arms','5d6'],['Fucile d’assalto','Shoulder Arms','5d6'],['Arma bianca leggera','Melee Weapon','1d6'],['Arma bianca pesante','Melee Weapon','3d6']];
+const AR=[['Nessuna',0],['Leathers',4],['Kevlar',7],['Light Armorjack',11],['Medium Armorjack',12]];
+let C=[],V={v:'home',dv:0,step:0,src:0},W,LG=[],DB=null,UID=null,GM=false,ALL=[],tm,PN='';
+try{PN=localStorage.getItem('cpr_pn')||''}catch(e){}
+try{C=JSON.parse(localStorage.getItem('cpr')||'[]')}catch(e){}
+const save=()=>{try{localStorage.setItem('cpr',JSON.stringify(C))}catch(e){alert('Memoria del browser piena: impossibile salvare.')}push()};
+function push(){const s=V.src;clearTimeout(tm);tm=setTimeout(()=>{if(!DB)return;if(s){const p=ALL.find(q=>q.id==s);if(p)DB.doc('pgs/'+s).update({chars:p.chars}).catch(()=>{})}else DB.doc('pgs/'+UID).set({pn:PN,t:Date.now(),chars:C}).catch(()=>{})},700)}
+const d=n=>1+Math.floor(Math.random()*n),cur=()=>(V.src?(ALL.find(p=>p.id==V.src)||{chars:[]}).chars:C).find(c=>c.id==V.id);
+const hl=c=>(c.cyber||[]).reduce((a,x)=>a+x[1],0),risk=c=>hl(c)>c.stats.EMP*10,maxHp=c=>10+5*Math.ceil((c.stats.BODY+c.stats.WILL)/2),lv=(c,n)=>c.skills[n]??(SKM[n].b?2:0);
+const pen=c=>c.hp<=0?-4:c.hp*2<maxHp(c)?-2:0;
+let SND=true,AC;
+function beep(f,t=.04){if(!SND)return;try{AC=AC||new AudioContext;const o=AC.createOscillator(),g=AC.createGain();o.type='square';o.frequency.value=f;g.gain.value=.025;o.connect(g);g.connect(AC.destination);o.start();o.stop(AC.currentTime+t)}catch(e){}}
+function fx(v,c){document.querySelectorAll('.die').forEach(x=>x.remove());const e=document.createElement('div');e.className='die';document.body.appendChild(e);let i=0;const t=setInterval(()=>{e.textContent=d(10);beep(300+d(400),.02);if(++i>9){clearInterval(t);e.textContent=v??'✔';e.className='die stop '+(c||'');beep(c=='crit'?950:c=='fum'?140:640,.12);setTimeout(()=>e.remove(),900)}},65)}
+function L(s,v,c){fx(v,c);setTimeout(()=>{LG.unshift(s);LG=LG.slice(0,20);const e=$('#log');if(e){e.innerHTML=LG.map(x=>'<div>'+x+'</div>').join('');e.firstChild.classList.add('new')}},700)}
+function boot(){const b=document.createElement('div');b.id='boot';document.body.appendChild(b);const ls=['NCPD MAINFRAME v4.2 - AVVIO','VERIFICA CREDENZIALI ........ OK','CANALE CRITTOGRAFATO ........ OK','CARICAMENTO DATABASE FASCICOLI ........ OK','ACCESSO CONSENTITO. BENVENUTO, AGENTE.'];let i=0;const end=()=>{clearInterval(t);b.classList.add('out');setTimeout(()=>b.remove(),600)},t=setInterval(()=>{if(i<ls.length){b.innerHTML+='<div>&gt; '+ls[i++]+'</div>';beep(260+i*90,.05)}else{clearInterval(t);setTimeout(end,500)}},380);b.onclick=end}
+function roll(c,label,parts){const p=pen(c);if(p)parts.push(['ferite',p]);let r=d(10),t=''+r,tot=r,n='';
+ if(r==10){const x=d(10);tot+=x;t+='+'+x;n=' <b class="ok">CRITICO!</b>'}else if(r==1){const x=d(10);tot-=x;t+='-'+x;n=' <b class="bad">FALLIMENTO CRITICO!</b>'}
+ tot+=parts.reduce((a,b)=>a+b[1],0);const dv=V.dv;
+ L(`<b>${esc(label)}</b>: d10[${t}]${n} ${parts.map(q=>(q[1]>=0?'+':'')+q[1]+' '+q[0]).join(' ')} = <b>${tot}</b>`+(dv?(tot>=dv?` <b class="ok">✔ RIUSCITA (DV ${dv})</b>`:` <b class="bad">✘ FALLITA (DV ${dv})</b>`):''),tot,r==10?'crit':r==1?'fum':'')}
+const wCost=()=>SK.reduce((a,s)=>a+((W.sk[s.n]??(s.b?2:0))-(s.b?2:0))*(s.x?2:1),0);
+const wStats=()=>ST.reduce((a,s)=>a+W.stats[s]-2,0);
+function newW(){W={name:'',handle:'',role:'Solo',img:'',stats:Object.fromEntries(ST.map(s=>[s,2])),sk:{},w1:0,w2:-1,ar:2,notes:'',gang:OP.gang[0],amb:'Strada',mot:'Soldi',trat:'Ironico',ally:'',enemy:'',bio:'',cy:[]};V.step=0}
+const A={
+home(){V.v='home';V.src=0;render()},cy(x){const i=+x.i,k=W.cy.indexOf(i);k<0?W.cy.push(i):W.cy.splice(k,1);render(1)},cyauto(){W.cy=[];let n=0;CY.forEach((x,i)=>{if(x[3].split(' ').includes(W.role)&&n+x[2]<=W.stats.EMP*10){W.cy.push(i);n+=x[2]}});render(1)},fa(){const c=cur();fight(c);render(1)},sv(){const c=cur();psyv(c);save();render(1)},calm(){const c=cur();c.psy=false;c.fa=0;save();render(1)},snd(){SND=!SND;$('#snd').textContent=SND?'🔊':'🔇'},rnd(){Object.keys(OP).forEach(k=>W[k]=OP[k][d(OP[k].length)-1]);render()},pdf(){pdf(cur())},gm(){V.v='gm';V.src=0;render()},new(){newW();V.v='wiz';render()},
+open(x){V.id=x.id;V.src=x.src||0;V.v='sheet';LG=[];V.dv=0;render()},
+del(x){if(V.cf==x.id){C=C.filter(c=>c.id!=x.id);save();V.cf=0}else V.cf=x.id;render()},
+step(x){const k=+x.d;if(k>0){const e=chkStep();if(e){alert(e);return}}V.step=Math.max(0,V.step+k);render()},
+role(){render()},
+meth(x){const m=x.m;ST.forEach(s=>W.stats[s]=2);if(m=='r'){let n=42;while(n){const s=ST[d(10)-1];if(W.stats[s]<8){W.stats[s]++;n--}}}
+ if(m=='p')R[W.role][3].split(' ').forEach((s,i)=>W.stats[s]=RV[i]);render()},
+st(x){const v=W.stats[x.s]+ +x.d;if(v<2||v>8||(x.d>0&&wStats()>=42))return;W.stats[x.s]=v;render()},
+sk(x){const s=SKM[x.n],b=s.b?2:0,v=(W.sk[x.n]??b)+ +x.d;if(v<b||v>6)return;if(x.d>0&&wCost()+(s.x?2:1)>40)return;W.sk[x.n]=v;render()},
+auto(){W.sk={};const l=R[W.role][4].split(',');let ch=1;while(ch){ch=0;for(const n of l){const s=SKM[n],v=W.sk[n]??(s.b?2:0);if(v<6&&wCost()+(s.x?2:1)<=40){W.sk[n]=v+1;ch=1}}}render()},
+fin(){const c={id:Date.now(),name:W.name,handle:W.handle,role:W.role,img:W.img,stats:{...W.stats},skills:{},weapons:[WP[W.w1],WP[W.w2]].filter(Boolean),armor:AR[W.ar],luck:W.stats.LUCK,eddies:0,notes:W.notes,story:{gang:W.gang,amb:W.amb,mot:W.mot,trat:W.trat,ally:W.ally,enemy:W.enemy,bio:W.bio},cyber:W.cy.map(i=>[CY[i][0],CY[i][2],CY[i][1]]),fa:0,psy:false};
+ SK.forEach(s=>{const v=W.sk[s.n]??(s.b?2:0);if(v>0)c.skills[s.n]=v});c.hp=maxHp(c);c.hum=Math.max(0,W.stats.EMP*10-hl(c));C.push(c);save();V.id=c.id;V.v='sheet';LG=[];render()},
+adj(x){const c=cur(),k=x.k;let v=c[k]+ +x.d;const mx={hp:maxHp(c),hum:c.stats.EMP*10,luck:c.stats.LUCK,eddies:1e9}[k];c[k]=Math.max(0,Math.min(mx,v));save();render(1)},
+rt(x){const c=cur();roll(c,x.s,[[x.s,c.stats[x.s]]])},
+rk(x){const c=cur(),s=SKM[x.n];roll(c,x.n,[[s.s,c.stats[s.s]],[x.n,lv(c,x.n)]])},
+ra(){const c=cur();roll(c,R[c.role][1],[['rango',4]])},
+at(x){const c=cur(),w=c.weapons[x.i],s=SKM[w[1]];roll(c,'Attacco: '+w[0],[[s.s,c.stats[s.s]],[w[1],lv(c,w[1])]]);fight(c);render(1)},
+dm(x){const c=cur(),w=c.weapons[x.i],n=parseInt(w[2]);let a=[],t=0;for(let i=0;i<n;i++){const r=d(6);a.push(r);t+=r}
+ const cr=a.filter(r=>r==6).length>1;L(`<b>Danni ${esc(w[0])}</b> (${w[2]}): [${a}] = <b>${t}</b> (−SP armatura bersaglio)`+(cr?' <b class="bad">FERITA CRITICA: +5 danni diretti ai PF!</b>':''),t)},
+ini(){const c=cur(),r=d(10);L(`<b>Iniziativa</b>: d10[${r}] +${c.stats.REF} REF = <b>${r+c.stats.REF}</b>`,r+c.stats.REF)},
+ds(){const c=cur(),r=d(10);L(`<b>Death Save</b>: d10[${r}] contro BODY ${c.stats.BODY}: `+(r<c.stats.BODY?'<b class="ok">✔ SALVO (esci sotto BODY)</b>':'<b class="bad">✘ MORTO (serve meno di BODY)</b>'))},
+fd(x){const n=+x.n,q=+x.q;let a=[],t=0;for(let i=0;i<q;i++){const r=d(n);a.push(r);t+=r}L(`<b>${q}d${n}</b>: [${a}] = <b>${t}</b>`,t)}};
+function chkStep(){if(V.step==0&&!W.name.trim())return 'Inserisci almeno il nome del personaggio.';if(V.step==1&&wStats()<42)return 'Hai ancora '+(42-wStats())+' punti statistica da assegnare.';return ''}
+document.addEventListener('click',e=>{const b=e.target.closest('[data-a]');if(b){beep(480,.03);A[b.dataset.a](b.dataset)}});
+document.addEventListener('input',e=>{const t=e.target,k=t.dataset.f;if(!k)return;if(k=='pn'){PN=t.value;try{localStorage.setItem('cpr_pn',PN)}catch(e){}push();return}if(k=='dv'){V.dv=+t.value||0;return}if(k=='notes'&&V.v=='sheet'){cur().notes=t.value;save();return}if(k=='ed'){const c=cur();c.eddies=Math.max(0,+t.value||0);save();return}W[k]=t.value});
+document.addEventListener('change',e=>{const t=e.target,k=t.dataset.f;if(!k)return;if(k=='role'||k=='w1'||k=='w2'||k=='ar'){W[k]=k=='role'?t.value:+t.value;render()}if(OP[k])W[k]=t.value;
+ if(k=='img'&&t.files[0]){const fr=new FileReader();fr.onload=()=>{const im=new Image();im.onload=()=>{const z=Math.min(1,240/Math.max(im.width,im.height)),cv=document.createElement('canvas');cv.width=im.width*z;cv.height=im.height*z;cv.getContext('2d').drawImage(im,0,0,cv.width,cv.height);W.img=cv.toDataURL('image/jpeg',.7);render()};im.src=fr.result};fr.readAsDataURL(t.files[0])}});
+const GUIDE=`<details class="card g"><summary>▶ GUIDA RAPIDA · leggi qui se è la tua prima volta</summary>
+<h3>1 · Come si fa una prova</h3><p>Tira <b>1 dado a 10 facce</b> e somma <b>Statistica + Abilità</b>.<br>Se il totale è <b>uguale o più alto della DV</b>, riesci.</p><p class="m">Esce 10? Tira ancora e somma. Esce 1? Tira ancora e sottrai.</p>
+<h3>2 · Quanto è difficile? (DV)</h3><table><tr><td>9</td><td>Semplice</td></tr><tr><td>13</td><td>Normale</td></tr><tr><td>15</td><td>Difficile</td></tr><tr><td>17</td><td>Molto difficile</td></tr><tr><td>21</td><td>Eroica</td></tr><tr><td>24</td><td>Impossibile</td></tr></table><p class="m">Nella scheda scrivi la DV e il registro ti dice se hai riuscito.</p>
+<h3>3 · I numeri della scheda</h3><ul><li><b>PF</b>: la tua salute. Sotto metà sei ferito (−2 ai tiri). A 0 sei in fin di vita (−4).</li><li><b>Umanità</b>: scende quando ti installi cyberware.</li><li><b>Fortuna</b>: spendi 1 punto per +1 a un tiro. Si recupera a ogni sessione.</li><li><b>SP</b>: la tua armatura, toglie punti ai danni che subisci.</li></ul>
+<h3>4 · Combattere</h3><ul><li><b>Iniziativa</b> decide chi agisce per primo.</li><li><b>Attacco</b> contro la DV che ti dice il master.</li><li>Se colpisci, tira i <b>Danni</b>. Due 6 = ferita critica (+5).</li></ul>
+<p class="m">Regole semplificate: per i dettagli chiedi al master o guarda il manuale.</p></details>`;
+function H(){return GUIDE+`<div class="card"><h2>GIOCATORE</h2><p class="m">Scrivi il tuo nome, così il master sa chi sei.</p><input type="text" data-f="pn" value="${esc(PN)}" placeholder="Il tuo nome"><p>${DB?'<span class="ok">● Sincronizzato: il master vede i tuoi personaggi</span>':'<span class="warn">○ Salvataggio solo su questo dispositivo</span>'}</p></div><div class="card"><h2>DATABASE FASCICOLI (${C.length})</h2><button class="g" data-a="new">+ Nuovo personaggio</button></div><div class="grid" style="grid-template-columns:repeat(auto-fill,minmax(260px,1fr))">`+C.map(c=>`<div class="card"><div class="row">${c.img?`<img class="av" src="${c.img}">`:'<div class="av"></div>'}<div><b>${esc(c.name)}</b><br><span class="m">“${esc(c.handle)}” · ${c.role}</span><br>PF ${c.hp}/${maxHp(c)}</div></div><div class="row" style="margin-top:8px"><button data-a="open" data-id="${c.id}">Apri</button><button data-a="del" data-id="${c.id}">${V.cf==c.id?'Conferma?':'Elimina'}</button></div></div>`).join('')+'</div>'}
+function Wz(){const T=['IDENTITÀ','STATISTICHE','ABILITÀ','EQUIPAGGIAMENTO','CYBERWARE','STORIA','RIEPILOGO'];let h=`<div class="card"><div class="row sp"><h2 style="border:0;margin:0">CREAZIONE ${V.step+1}/7 · ${T[V.step]}</h2><span class="m">${T.map((t,i)=>i==V.step?'['+(i+1)+']':i+1).join(' ')}</span></div></div><div class="card">`;
+ if(V.step==0){const r=R[W.role];h+=`<div class="row"><div style="flex:1;min-width:200px"><p class="m">Nome</p><input type="text" data-f="name" value="${esc(W.name)}"><p class="m">Soprannome (handle)</p><input type="text" data-f="handle" value="${esc(W.handle)}"></div><div>${W.img?`<img class="av" src="${W.img}">`:'<div class="av"></div>'}<p class="m">Immagine</p><input type="file" accept="image/*" data-f="img" style="max-width:150px"></div></div><p class="m">Ruolo: il tuo mestiere. Determina l’abilità speciale e le statistiche consigliate.</p><select data-f="role">${Object.keys(R).map(k=>`<option${k==W.role?' selected':''}>${k}</option>`).join('')}</select><p>${r[0]}<br><b>Abilità di ruolo:</b> ${r[1]} (rango 4): ${r[2]}</p>`}
+ if(V.step==1){h+=`<p class="m">Hai 42 punti da distribuire (ogni statistica parte da 2, massimo 8). Rimasti: <b class="${wStats()<42?'warn':'ok'}">${42-wStats()}</b></p><div class="row"><button data-a="meth" data-m="p">Consigliato per ${W.role}</button><button data-a="meth" data-m="r">Casuale</button><button data-a="meth" data-m="m">Azzera</button></div><div class="cells" style="margin-top:8px">`+ST.map(s=>`<div class="st"><div class="row sp"><button class="q" data-a="st" data-s="${s}" data-d="-1">−</button><b>${W.stats[s]}</b><button class="q" data-a="st" data-s="${s}" data-d="1">+</button></div><b style="font-size:14px">${s}</b><span class="m">${SD[s]}</span></div>`).join('')+'</div>'}
+ if(V.step==2){h+=`<p class="m">40 punti abilità (max livello 6). Le abilità di base partono a 2 gratis. Quelle con ×2 costano doppio. Rimasti: <b class="${wCost()>40?'bad':'ok'}">${40-wCost()}</b></p><button data-a="auto">Distribuzione automatica per ${W.role}</button><div class="cells" style="margin-top:8px">`+SK.map(s=>{const v=W.sk[s.n]??(s.b?2:0);return`<div class="sk"><span class="n">${s.n} <span class="m">${s.s}${s.x?' ×2':''}</span></span><button class="q" data-a="sk" data-n="${s.n}" data-d="-1">−</button><b>${v}</b><button class="q" data-a="sk" data-n="${s.n}" data-d="1">+</button></div>`}).join('')+'</div>'}
+ if(V.step==3){const o=(a,sel,none)=>(none?'<option value="-1">— nessuna —</option>':'')+a.map((x,i)=>`<option value="${i}"${i==sel?' selected':''}>${x[0]}${x.length>2?` (${x[2]}, ${x[1]})`:` (SP ${x[1]})`}</option>`).join('');
+  h+=`<p class="m">Scegli l’equipaggiamento iniziale. Potrai annotare altro nelle note.</p><p>Arma principale</p><select data-f="w1">${o(WP,W.w1)}</select><p>Arma secondaria</p><select data-f="w2">${o(WP,W.w2,1)}</select><p>Armatura (SP = punti che sottraggono ai danni)</p><select data-f="ar">${o(AR,W.ar)}</select>`}
+ if(V.step==4){let pc;const cap=W.stats.EMP*10,u=hl({cyber:W.cy.map(i=>[0,CY[i][2]])});h+=`<p class="m">Il cyberware ti potenzia ma costa Umanità (UM). Capacità massima: <b>${cap}</b> (EMP×10). Usata: <b class="${u>cap?'bad':'ok'}">${u}</b></p><div class="bar"><i style="width:${Math.min(100,u/cap*100)}%"></i></div>${u>cap?'<p class="bad">⚠ Limite superato: sei a rischio CYBERPSYCHO. Ogni 3 azioni di combattimento farai un tiro salvezza: se fallisci vai in psicosi e devi uccidere tutti.</p>':''}<div class="row" style="margin:8px 0"><button data-a="cyauto">Consigliato per ${W.role}</button></div><div class="cells">`+CY.map((x,i)=>[x,i]).sort((a,b)=>CATS.indexOf(a[0][4])-CATS.indexOf(b[0][4])||b[0][3].split(' ').includes(W.role)-a[0][3].split(' ').includes(W.role)).map(([x,i])=>(x[4]!=pc?(pc=x[4],`<h2 style="grid-column:1/-1;margin:8px 0 0">${pc}</h2>`):'')+`<button class="${W.cy.includes(i)?'on':''}" data-a="cy" data-i="${i}" style="text-align:left;text-transform:none"><b>${x[0]}</b> · ${x[2]} UM${x[3].split(' ').includes(W.role)?' ★':''}<br><span class="m">${x[1]}</span></button>`).join('')+`</div><p class="m">★ = consigliato per il ruolo. Valori semplificati: controlla il manuale.</p>`}
+ if(V.step==5){const o=k=>`<p class="m">${LB[k]}</p><select data-f="${k}">${OP[k].map(x=>`<option${x==W[k]?' selected':''}>${x}</option>`).join('')}</select>`;h+=`<p class="m">Chi sei e da dove vieni? Scegli le opzioni o premi il tasto per un suggerimento casuale.</p><button data-a="rnd">🎲 Suggerisci a caso</button>`+Object.keys(OP).map(o).join('')+`<p class="m">Alleato / contatto</p><input type="text" data-f="ally" value="${esc(W.ally)}"><p class="m">Nemico / rivale</p><input type="text" data-f="enemy" value="${esc(W.enemy)}"><p class="m">La tua storia (bastano poche righe)</p><textarea data-f="bio">${esc(W.bio)}</textarea>`}
+ if(V.step==6){const t=W.stats,hp=10+5*Math.ceil((t.BODY+t.WILL)/2);h+=`<div class="row">${W.img?`<img class="av" src="${W.img}">`:''}<div><b>${esc(W.name)}</b> “${esc(W.handle)}” · ${W.role}<br>PF ${hp} · Umanità ${t.EMP*10} · Fortuna ${t.LUCK} · SP ${AR[W.ar][1]}<br>${ST.map(s=>s+' '+t[s]).join(' · ')}</div></div><button class="g" data-a="fin" style="margin-top:10px">▶ Crea scheda personaggio</button>`}
+ return h+`</div><div class="row">${V.step?'<button data-a="step" data-d="-1">◀ Indietro</button>':''}${V.step<6?'<button data-a="step" data-d="1">Avanti ▶</button>':''}</div>`}
+function Sh(){const c=cur();if(!c)return'';const hp=maxHp(c),p=pen(c),r=R[c.role],sks=SK.filter(s=>lv(c,s.n)>0);
+ const ctr=(k,l,mx)=>`<div class="st"><span class="m">${l}</span><div class="row sp"><button class="q" data-a="adj" data-k="${k}" data-d="${k=='eddies'?-100:-1}">−</button><b>${c[k]}</b><button class="q" data-a="adj" data-k="${k}" data-d="${k=='eddies'?100:1}">+</button></div><span class="m">${mx}</span></div>`;
+ return(V.src?'<div class="card"><button data-a="gm">◀ Console master</button> <span class="warn">Stai modificando il PG di un giocatore</span></div>':'')+`<div class="card"><div class="row">${c.img?`<img class="av" src="${c.img}">`:'<div class="av"></div>'}<div style="flex:1"><div class="m">NCPD · FASCICOLO N° ${String(c.id).slice(-6)} · ${c.psy?'<b class="bad">PERICOLO: CYBERPSYCHO</b>':risk(c)?'<b class="warn">SOGGETTO A RISCHIO</b>':'NESSUN MANDATO ATTIVO'}</div><h2 style="border:0;margin:0;font-size:18px">${esc(c.name)}</h2>“${esc(c.handle)}” · ${c.role}<div class="bar" style="margin-top:6px"><i class="${p?'lo':''}" style="width:${Math.max(0,c.hp/hp*100)}%"></i></div><span class="${p?'bad':'ok'}">${c.hp<=0?'IN FIN DI VITA (−4)':p?'GRAVEMENTE FERITO (−2)':'Stabile'}</span></div><button class="g" data-a="pdf">⬇ Scarica PDF</button></div></div>
+<div class="card"><h2>STATISTICHE · tocca per tirare</h2><div class="grid">${ST.map(s=>`<button class="st" data-a="rt" data-s="${s}"><b>${c.stats[s]}</b>${s}</button>`).join('')}</div></div>
+<div class="card"><h2>VITALI</h2><div class="grid">${ctr('hp','PUNTI FERITA','max '+hp+' · grave &lt; '+Math.ceil(hp/2))}${ctr('hum','UMANITÀ','max '+c.stats.EMP*10)}${ctr('luck','FORTUNA','max '+c.stats.LUCK)}${ctr('eddies','EDDIES (€$)','±100')}<div class="st"><span class="m">ARMATURA</span><b>${c.armor[1]}</b>${c.armor[0]}</div></div></div>
+<div class="card"><h2>AZIONI RAPIDE</h2><div class="row"><span class="m">DV:</span><input type="number" data-f="dv" value="${V.dv||''}" placeholder="0" style="width:70px"><button data-a="ini">Iniziativa</button><button data-a="ds">Death Save</button><button data-a="ra">${r[1]}</button><span class="m">|</span>${[[6,1],[6,2],[6,3],[10,1],[100,1]].map(x=>`<button data-a="fd" data-n="${x[0]}" data-q="${x[1]}">${x[1]}d${x[0]}</button>`).join('')}</div><p class="m">Con una DV impostata, le prove dicono subito se riescono.</p><h2 style="margin-top:8px">REGISTRO TIRI</h2><div id="log">${LG.map(x=>'<div>'+x+'</div>').join('')}</div></div>
+${(c.cyber||[]).length?`<div class="card"><h2>CYBERWARE · ${hl(c)}/${c.stats.EMP*10} UM</h2>${c.psy?'<p class="bad glitch"><b>⚠ CYBERPSYCHO: fuori controllo! Devi attaccare e uccidere tutti finché il master non ti ferma.</b></p><button data-a="calm">Calmato (reset)</button>':risk(c)?`<p class="warn">⚠ Hai superato la capacità: sei a rischio Cyberpsycho. Ogni 3 azioni di combattimento fai un tiro salvezza (gli attacchi contano da soli).</p><div class="row"><b>Azioni: ${c.fa||0}/3</b><button data-a="fa">+1 azione di combattimento</button><button data-a="sv">Tiro salvezza ora</button></div>`:'<p class="ok">Entro il limite: nessun rischio.</p>'}${c.cyber.map(x=>`<div class="sk"><span class="n">${esc(x[0])} <span class="m">${esc(x[2])}</span></span><span>${x[1]} UM</span></div>`).join('')}</div>`:''}<div class="card"><h2>ARMI</h2>${c.weapons.map((w,i)=>`<div class="sk"><span class="n">${esc(w[0])} <span class="m">${w[2]} · ${w[1]}</span></span><button data-a="at" data-i="${i}">Attacco</button><button data-a="dm" data-i="${i}">Danni</button></div>`).join('')||'<span class="m">Nessuna arma</span>'}</div>
+<div class="card"><h2>ABILITÀ · tocca 🎲 per tirare</h2><div class="cells">${sks.map(s=>`<div class="sk"><span class="n">${s.n} <span class="m">${s.s} ${c.stats[s.s]}+${lv(c,s.n)}</span></span><button class="q" data-a="rk" data-n="${s.n}">${c.stats[s.s]+lv(c,s.n)+p} 🎲</button></div>`).join('')}</div></div>
+${c.story?`<div class="card"><h2>STORIA</h2><p><b>${esc(c.story.gang)}</b> · cresciuto: ${esc(c.story.amb)} · ti muove: ${esc(c.story.mot)} · carattere: ${esc(c.story.trat)}</p>${c.story.ally?`<p>Alleato: ${esc(c.story.ally)}</p>`:''}${c.story.enemy?`<p>Nemico: ${esc(c.story.enemy)}</p>`:''}<p class="m">${esc(c.story.bio)}</p></div>`:''}<div class="card"><h2>NOTE · equipaggiamento, contatti, cyberware</h2><textarea data-f="notes">${esc(c.notes)}</textarea></div>`+GUIDE}
+function G(){const n=ALL.reduce((a,p)=>a+p.chars.length,0);return`<div class="card"><h2>CONSOLE MASTER · ${ALL.length} GIOCATORI · ${n} PERSONAGGI</h2><p class="m">Vedi in tempo reale i personaggi di tutti. Apri una scheda per controllarla o aggiornare PF, Fortuna ed eddies.</p></div>`+(ALL.map(p=>`<div class="card"><h2>${esc(p.pn||'Giocatore senza nome')}${p.id==UID?' (tu)':''}</h2><div class="grid" style="grid-template-columns:repeat(auto-fill,minmax(250px,1fr))">`+p.chars.map(c=>`<div class="st" style="text-align:left"><div class="row">${c.img?`<img class="av" style="width:64px;height:64px" src="${c.img}">`:''}<div><b style="font-size:15px;display:inline">${esc(c.name)}</b><br><span class="m">“${esc(c.handle)}” · ${c.role}</span><br>PF ${c.hp}/${maxHp(c)} · REF ${c.stats.REF} · SP ${c.armor[1]}${c.psy?' <b class="bad">⚠ PSICOSI</b>':risk(c)?' <b class="warn">⚠ a rischio</b>':''}</div></div><div class="bar" style="margin:6px 0"><i style="width:${Math.max(0,c.hp/maxHp(c)*100)}%"></i></div><button data-a="open" data-id="${c.id}" data-src="${p.id}">Apri scheda</button></div>`).join('')+'</div></div>').join('')||'<div class="card m">Nessun personaggio ancora.</div>')}
+async function pdf(c){try{let dl=null;try{dl=await claude.use('downloads')}catch(e){}if(!window.jspdf){L('<b class="bad">Libreria PDF non caricata: serve la connessione internet.</b>');return}
+ const o=new window.jspdf.jsPDF({unit:'mm',format:'a4'});let y=0;const P=(t,x=15,z=10,b=0)=>{o.setFontSize(z);o.setFont('helvetica',b?'bold':'normal');o.setTextColor(30,30,30);o.splitTextToSize(String(t),195-x).forEach(l=>{if(y>282){o.addPage();y=18}o.text(l,x,y);y+=z*.5})};
+ o.setFillColor(29,78,140);o.rect(0,0,210,12,'F');o.setFontSize(11);o.setFont('helvetica','bold');o.setTextColor(255,255,255);o.text('NCPD // FASCICOLO PERSONALE - CYBERPUNK RED',15,8);
+ let x0=15,ih=0;if(c.img){const im=new Image();await new Promise(r=>{im.onload=r;im.onerror=r;im.src=c.img});const k=Math.min(38/im.width,38/im.height),w=im.width*k;ih=im.height*k;o.addImage(c.img,'JPEG',15,18,w,ih);x0=15+w+6}
+ y=25;const t=c.story||{};P(c.name,x0,18,1);P('"'+c.handle+'" - '+c.role,x0,11);P(R[c.role][1]+' (rango 4): '+R[c.role][2],x0,9);if(t.gang)P(t.gang+' | '+t.amb+' | '+t.mot+' | '+t.trat,x0,9);
+ y=Math.max(y,18+ih)+8;ST.forEach((s,i)=>{const x=15+i*18.5;o.setDrawColor(29,78,140);o.rect(x,y,17,15);o.setFontSize(8);o.setFont('helvetica','normal');o.text(s,x+8.5,y+4,{align:'center'});o.setFontSize(16);o.setFont('helvetica','bold');o.text(String(c.stats[s]),x+8.5,y+12,{align:'center'})});y+=23;
+ P(`PF ${c.hp}/${maxHp(c)}   Umanità ${c.hum}/${c.stats.EMP*10}   Fortuna ${c.luck}/${c.stats.LUCK}   Armatura ${c.armor[0]} (SP ${c.armor[1]})   Eddies ${c.eddies}`,15,10,1);y+=3;
+ if(c.weapons.length){P('ARMI',15,11,1);c.weapons.forEach(w=>P(w[0]+' - '+w[2]+' ('+w[1]+')'));y+=3}
+ if((c.cyber||[]).length){P('CYBERWARE ('+hl(c)+'/'+c.stats.EMP*10+' UM)',15,11,1);c.cyber.forEach(x=>P(x[0]+' - '+x[1]+' UM - '+x[2]));y+=3}
+ const sk=SK.filter(s=>lv(c,s.n)>0),h=Math.ceil(sk.length/2);P('ABILITÀ',15,11,1);y+=1;if(y+h*5>282){o.addPage();y=18}
+ sk.forEach((s,i)=>{o.setFontSize(9);o.setFont('helvetica','normal');o.text(`${s.n} (${s.s}) liv ${lv(c,s.n)} = ${c.stats[s.s]+lv(c,s.n)}`,15+(i<h?0:95),y+(i%h)*5)});y+=h*5+4;
+ if(t.ally||t.enemy){P('Alleato: '+(t.ally||'-')+'   Nemico: '+(t.enemy||'-'))}if(t.bio){P('STORIA',15,11,1);P(t.bio)}if(c.notes){y+=3;P('NOTE',15,11,1);P(c.notes)}
+ const fn=(c.name||'personaggio').replace(/[^\w-]+/g,'_')+'.pdf';if(dl)await dl.save({filename:fn,data:o.output('blob')});else o.save(fn)}catch(e){if(!e||e.code!='declined')L('<b class="bad">Errore nella creazione del PDF.</b>')}}
+function psyv(c){const pn=Math.ceil((hl(c)-c.stats.EMP*10)/7),r=d(10),t=r+c.stats.WILL-pn,b=`<b>Salvezza Cyberpsicosi</b>: d10[${r}] +${c.stats.WILL} WILL −${pn} = <b>${t}</b> (serve 9) `;if(t>=9)L(b+'<b class="ok">✔ Resti lucido</b>');else{c.psy=true;L(b+'<b class="bad">✘ PSICOSI! Attacca e uccidi tutti!</b>')}}
+function fight(c){if(!risk(c)||c.psy)return;c.fa=(c.fa||0)+1;if(c.fa>=3){c.fa=0;psyv(c)}save()}
+function render(k){const m=$('#m');m.innerHTML=({home:H,wiz:Wz,sheet:Sh,gm:G})[V.v]();m.className=k?'':'anim';if(!k){window.scrollTo(0,0);[...m.children].forEach((e,i)=>e.style.animationDelay=Math.min(i,12)*45+'ms')}const c=V.v=='sheet'?cur():0;document.body.classList.toggle('psy',!!(c&&c.psy))}
+render();if(!matchMedia('(prefers-reduced-motion:reduce)').matches)boot();
+(async()=>{try{const u=await claude.use('user'),db=await claude.use('db');if(!u||!db)return;const id=await u.id();if(!id)return;DB=db;UID=id;GM=!!((await u.isOwner())||(await u.canEdit()));
+ const s=await DB.doc('pgs/'+UID).get();if(s.exists){const r=s.data(),ids=new Set(C.map(c=>c.id));if(!PN)PN=r.pn||'';(r.chars||[]).forEach(c=>{if(!ids.has(c.id))C.push(c)});try{localStorage.setItem('cpr',JSON.stringify(C))}catch(e){}}
+ push();if(GM){$('#gmb').hidden=false;DB.collection('pgs').onSnapshot(q=>{ALL=q.docs.map(x=>({id:x.id,...x.data()}));ALL.forEach(p=>p.chars=p.chars||[]);if(V.v=='gm')render(1)})}
+ if(V.v=='home')render(1)}catch(e){}})();
+</script></body></html>
